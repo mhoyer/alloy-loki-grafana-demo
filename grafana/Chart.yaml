@@ -1,0 +1,11 @@
+apiVersion: v2
+name: platform-grafana
+version: 2.1.0
+description: Wrapper Helm Chart for Grafana, a Postgres instance and provisioned Grafana resources.
+maintainers:
+  - name: Marcel Hoyer
+    email: m.hoyer@cid.com
+dependencies:
+  - name: grafana
+    version: "9.2.6"
+    repository: "oci://ghcr.io/grafana/helm-charts"

@@ -1,126 +1,127 @@
-custom:
-  domain: "grafana.l7.test2-dev-bs.kkp.lab2.cid"
+grafana:
+  custom:
+    domain: "grafana.l7.test2-dev-bs.kkp.lab2.cid"
 
-sidecar:
-  # see also https://github.com/kiwigrid/k8s-sidecar/blob/master/README.md#configuration-environment-variables
-  alerts:
-    enabled: true
-    env:
-      LOG_FORMAT: LOGFMT
-      REQ_SKIP_TLS_VERIFY: true
-    label: grafana-alerts
-    labelValue: "true"
-    reloadURL: "http://localhost:3000/api/admin/provisioning/alerting/reload"
-    searchNamespace: ALL
+  sidecar:
+    # see also https://github.com/kiwigrid/k8s-sidecar/blob/master/README.md#configuration-environment-variables
+    alerts:
+      enabled: true
+      env:
+        LOG_FORMAT: LOGFMT
+        REQ_SKIP_TLS_VERIFY: true
+      label: grafana-alerts
+      labelValue: "true"
+      reloadURL: "http://localhost:3000/api/admin/provisioning/alerting/reload"
+      searchNamespace: ALL
 
-  dashboards:
-    enabled: true
-    env:
-      LOG_FORMAT: LOGFMT
-      REQ_SKIP_TLS_VERIFY: true
-    label: grafana-dashboard
-    labelValue: "true"
-    folderAnnotation: grafana-dashboard/folder
-    provider:
-      foldersFromFilesStructure: true
-    reloadURL: "http://localhost:3000/api/admin/provisioning/dashboards/reload"
-    searchNamespace: ALL
+    dashboards:
+      enabled: true
+      env:
+        LOG_FORMAT: LOGFMT
+        REQ_SKIP_TLS_VERIFY: true
+      label: grafana-dashboard
+      labelValue: "true"
+      folderAnnotation: grafana-dashboard/folder
+      provider:
+        foldersFromFilesStructure: true
+      reloadURL: "http://localhost:3000/api/admin/provisioning/dashboards/reload"
+      searchNamespace: ALL
 
-  datasources:
-    enabled: true
-    env:
-      LOG_FORMAT: LOGFMT
-      REQ_SKIP_TLS_VERIFY: true
-    label: grafana-datasource
-    labelValue: "true"
-    reloadURL: "http://localhost:3000/api/admin/provisioning/datasources/reload"
-    searchNamespace: ALL
+    datasources:
+      enabled: true
+      env:
+        LOG_FORMAT: LOGFMT
+        REQ_SKIP_TLS_VERIFY: true
+      label: grafana-datasource
+      labelValue: "true"
+      reloadURL: "http://localhost:3000/api/admin/provisioning/datasources/reload"
+      searchNamespace: ALL
 
-revisionHistoryLimit: 0
+  revisionHistoryLimit: 0
 
-# service:
-#   type: ClusterIP
-#   port: 80
-#   ipFamilies:
-#     - IPv4
+  # service:
+  #   type: ClusterIP
+  #   port: 80
+  #   ipFamilies:
+  #     - IPv4
 
-# readinessProbe:
-#   httpGet:
-#     scheme: HTTPS
+  # readinessProbe:
+  #   httpGet:
+  #     scheme: HTTPS
 
-# livenessProbe:
-#   httpGet:
-#     scheme: HTTPS
+  # livenessProbe:
+  #   httpGet:
+  #     scheme: HTTPS
 
-replicas: 1 # HACK: must be 1 if database.type = sqlite3
+  replicas: 1 # HACK: must be 1 if database.type = sqlite3
 
-headlessService: false # necessary for unified alerting https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md#high-availability-for-unified-alerting
+  headlessService: false # necessary for unified alerting https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md#high-availability-for-unified-alerting
 
-annotations:
-  reloader.stakater.com/auto: "true"
-ingress:
-  enabled: true
-  ingressClassName: kubelb
-  hosts:
-    - "{{ .Values.custom.domain }}"
   annotations:
-    kubelb.k8c.io/manage-certificates: "true"
-  tls:
-    - hosts:
-        - "{{ .Values.custom.domain }}"
-      secretName: "{{ .Values.custom.domain }}-tls"
-
-resources:
-  requests:
-    cpu: 50m
-    memory: 512Mi
-  limits:
-    memory: 1Gi
-
-persistence:
-  enabled: false
-
-grafana.ini:
-  analytics:
-    reporting_enabled: false
-    check_for_updates: false
-    check_for_plugin_updates: false
-  database:
-    type: sqlite3 # HACK
-    # host: $__file{/secrets/grafana-postgres/host}:$__file{/secrets/grafana-postgres/port}
-    # name: $__file{/secrets/grafana-postgres/dbname}
-    # user: $__file{/secrets/grafana-postgres/user}
-    # password: $__file{/secrets/grafana-postgres/password}
-    # max_open_conn: 75
-  server:
-    domain: "{{ .Values.custom.domain }}"
-    root_url: "https://{{ .Values.custom.domain }}"
-    protocol: http
-    serve_from_sub_path: false
-    # cert_file: /secrets/grafana-tls/tls.crt
-    # cert_key: /secrets/grafana-tls/tls.key
-  unified_alerting:
+    reloader.stakater.com/auto: "true"
+  ingress:
     enabled: true
+    ingressClassName: kubelb
+    hosts:
+      - "{{ .Values.custom.domain }}"
+    annotations:
+      kubelb.k8c.io/manage-certificates: "true"
+    tls:
+      - hosts:
+          - "{{ .Values.custom.domain }}"
+        secretName: "{{ .Values.custom.domain }}-tls"
 
-    # don't send duplicate alerts https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md#high-availability-for-unified-alerting
-    ha_peers: "{{ .Release.Name }}-headless:9094"
-    ha_listen_address: "${POD_IP}:9094"
-    ha_advertise_address: "${POD_IP}:9094"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
 
-  smtp:
+  persistence:
     enabled: false
 
-# extraSecretMounts:
-  # - name: grafana-postgres
-  #   mountPath: /secrets/grafana-postgres
-  #   secretName: platform-grafana-postgres-platform-postgres-app
-  #   readOnly: true
-  #   optional: false
-  # - name: grafana-tls
-  #   mountPath: /secrets/grafana-tls
-  #   secretName: platform-grafana.platform.svc.cluster.local-tls
-  #   readOnly: true
-  #   optional: true
+  grafana.ini:
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+      check_for_plugin_updates: false
+    database:
+      type: sqlite3 # HACK
+      # host: $__file{/secrets/grafana-postgres/host}:$__file{/secrets/grafana-postgres/port}
+      # name: $__file{/secrets/grafana-postgres/dbname}
+      # user: $__file{/secrets/grafana-postgres/user}
+      # password: $__file{/secrets/grafana-postgres/password}
+      # max_open_conn: 75
+    server:
+      domain: "{{ .Values.custom.domain }}"
+      root_url: "https://{{ .Values.custom.domain }}"
+      protocol: http
+      serve_from_sub_path: false
+      # cert_file: /secrets/grafana-tls/tls.crt
+      # cert_key: /secrets/grafana-tls/tls.key
+    unified_alerting:
+      enabled: true
 
-rbac:
-  create: true
+      # don't send duplicate alerts https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md#high-availability-for-unified-alerting
+      ha_peers: "{{ .Release.Name }}-headless:9094"
+      ha_listen_address: "${POD_IP}:9094"
+      ha_advertise_address: "${POD_IP}:9094"
+
+    smtp:
+      enabled: false
+
+  # extraSecretMounts:
+    # - name: grafana-postgres
+    #   mountPath: /secrets/grafana-postgres
+    #   secretName: platform-grafana-postgres-platform-postgres-app
+    #   readOnly: true
+    #   optional: false
+    # - name: grafana-tls
+    #   mountPath: /secrets/grafana-tls
+    #   secretName: platform-grafana.platform.svc.cluster.local-tls
+    #   readOnly: true
+    #   optional: true
+
+  rbac:
+    create: true
