@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "platform-alloy-logs"
+  labels:
+    {{- include "platform-alloy-logs.labels" . | nindent 4 }}
+data:
+  config.alloy: |-
+    {{- .Files.Get "files/config.alloy" | nindent 4 }}

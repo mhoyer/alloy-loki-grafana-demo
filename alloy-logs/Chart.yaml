@@ -1,0 +1,14 @@
+apiVersion: v2
+name: platform-alloy-logs
+version: 1.2.0
+description: Wrapper Helm Chart for Grafana Alloy, to scrape and ship logs from Kubernetes to Loki.
+maintainers:
+  - name: Marcel Hoyer
+    email: m.hoyer@cid.com
+dependencies:
+  - name: alloy
+    version: "1.1.1"
+    repository: https://grafana.github.io/helm-charts
+annotations:
+  fullValuesYaml: https://github.com/grafana/alloy/blob/helm-chart/1.1.1/operations/helm/charts/alloy/values.yaml
+  diffWithLatest: https://github.com/grafana/alloy/compare/helm-chart/1.1.1..main#files_bucket
