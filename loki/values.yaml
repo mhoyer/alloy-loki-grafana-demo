@@ -1,58 +1,59 @@
-deploymentMode: SingleBinary
-singleBinary:
-  replicas: 1
-  persistence:
-    storageClass: vsphere-csi
 loki:
-  revisionHistoryLimit: 0
-  commonConfig:
-    replication_factor: 1 # reqired to support querying when only a single replica is available
-  compactor:
-    ## For Retention Configuration (see also: https://grafana.com/docs/loki/latest/operations/storage/retention/#retention-configuration)
-    # compaction_interval: 10m # default 10m
-    # retention_delete_delay: 2h # default: 2h
-    retention_enabled: true
-    delete_request_store: filesystem
-  limits_config:
-    ## For Retention Configuration (see also: https://grafana.com/docs/loki/latest/operations/storage/retention/#configuring-the-retention-period)
-    retention_period: 30d
-  podAnnotations:
-    prometheus.io/path: /metrics
-    prometheus.io/port: "3100"
-  storage:
-    type: filesystem # HACK: see https://grafana.com/docs/loki/latest/operations/storage/filesystem/
-  schemaConfig:
-    configs:
-      - from: 2024-04-01
-        store: tsdb
-        object_store: filesystem
-        schema: v13
-        index:
-          prefix: loki_index_
-          period: 24h
-  structuredConfig:
-    analytics:
-      reporting_enabled: false
+  deploymentMode: SingleBinary
+  singleBinary:
+    replicas: 1
+    persistence:
+      storageClass: vsphere-csi
+  loki:
+    revisionHistoryLimit: 0
+    commonConfig:
+      replication_factor: 1 # reqired to support querying when only a single replica is available
+    compactor:
+      ## For Retention Configuration (see also: https://grafana.com/docs/loki/latest/operations/storage/retention/#retention-configuration)
+      # compaction_interval: 10m # default 10m
+      # retention_delete_delay: 2h # default: 2h
+      retention_enabled: true
+      delete_request_store: filesystem
+    limits_config:
+      ## For Retention Configuration (see also: https://grafana.com/docs/loki/latest/operations/storage/retention/#configuring-the-retention-period)
+      retention_period: 30d
+    podAnnotations:
+      prometheus.io/path: /metrics
+      prometheus.io/port: "3100"
+    storage:
+      type: filesystem # HACK: see https://grafana.com/docs/loki/latest/operations/storage/filesystem/
+    schemaConfig:
+      configs:
+        - from: 2024-04-01
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+    structuredConfig:
+      analytics:
+        reporting_enabled: false
 
 
-backend:
-  replicas: 0
-read:
-  replicas: 0
-write:
-  replicas: 0
-test:
-  enabled: false
-lokiCanary:
-  enabled: false
-ruler:
-  enabled: false
-memcachedExporter:
-  enabled: false
-resultsCache:
-  enabled: false
-chunksCache:
-  enabled: false
-sidecar:
-  rules:
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  test:
     enabled: false
+  lokiCanary:
+    enabled: false
+  ruler:
+    enabled: false
+  memcachedExporter:
+    enabled: false
+  resultsCache:
+    enabled: false
+  chunksCache:
+    enabled: false
+  sidecar:
+    rules:
+      enabled: false
