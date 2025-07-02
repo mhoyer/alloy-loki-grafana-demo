@@ -1,6 +1,6 @@
 grafana:
   custom:
-    domain: "grafana.l7.test2-dev-bs.kkp.lab2.cid"
+    domain: "" # put the domain/host for ingress exposure
 
   sidecar:
     # see also https://github.com/kiwigrid/k8s-sidecar/blob/master/README.md#configuration-environment-variables

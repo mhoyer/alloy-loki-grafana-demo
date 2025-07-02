@@ -2,8 +2,8 @@ loki:
   deploymentMode: SingleBinary
   singleBinary:
     replicas: 1
-    persistence:
-      storageClass: vsphere-csi
+    # persistence:
+    #   storageClass: ""
   loki:
     revisionHistoryLimit: 0
     commonConfig:
